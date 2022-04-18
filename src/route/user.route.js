@@ -11,7 +11,7 @@ router.delete('/:userId', auth("Admin"), userController.deleteUser)
 
 
 router.post('/login', userController.login)
-router.post('/logout', auth(), userController.logout)
+router.get('/logout', auth(), userController.logout)
 
 router.post('/stationLogin', userController.getStationToken)
 
