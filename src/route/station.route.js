@@ -6,8 +6,8 @@ const router = express.Router();
 
 router.get('/user/', auth(), stationController.getAllStation)
 router.get('/user/:stationId', auth(), stationController.getStationDetail)
-router.post('/user/:stationId', auth(), stationController.rentBike)
-router.put('/user/:stationId', auth(), stationController.returnBike)
+// router.post('/user/:stationId', auth(), stationController.rentBike)
+router.post('/user/:stationId/:bikeId', auth("Station"), stationController.returnBike)
 
 // station management
 
