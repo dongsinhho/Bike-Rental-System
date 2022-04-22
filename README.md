@@ -15,6 +15,17 @@ $ docker build -t tagName .
 $ docker run -d -p portMachine:portContainer tagName
 ```
 
+#### Environment variable
+```
+PORT=3000
+DB_USER=
+DB_PASSWORD=
+MONGODB_URL=
+JWT_SECRET_KEY=t
+EXPIRES_IN=2d
+STATION_EXPIRES_IN=100d
+STATION_PORT=3456
+```
 
 - [x] Dockerize
 - [ ] Push Image to Docker Hub

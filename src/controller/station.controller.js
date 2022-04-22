@@ -1,7 +1,8 @@
 const Station = require("../model/station.model")
 const fetch = require('node-fetch');
 const Payment = require("../model/payment.model")
-const { createStationValidation, updateStationValidation, changeStatusValidation } = require("../util/validation")
+const { createStationValidation, updateStationValidation, changeStatusValidation } = require("../util/validation");
+const Bike = require("../model/bike.model");
 
 const stationController = {
     getAllStation: async (req, res) => {
@@ -10,7 +11,7 @@ const stationController = {
             if (req.user.role === "admin") {
                 station = await Station.find()
             } else {
-                station = await Station.find().select("-ip, -description")
+                station = await Station.find()
             }
             if (!station) {
                 return res.status(404).json({message: "Not found any station"})
@@ -23,16 +24,11 @@ const stationController = {
     },
     getStationDetail: async (req, res) => {
         try {
-            let station
-            if (req.user.role === "admin") {
-                station = await Station.findById(req.params.stationId)
-            } else {
-                station = await Station.findById(req.params.stationId).select("-ip")
+            const bike = await Bike.find({station: req.params.stationId})
+            if (!bike) {
+                return res.status(404).json({message: "This station don't have any bike"})
             }
-            if (!station) {
-                return res.status(404).json({message: "Not found this station"})
-            }
-            return res.status(200).json(station) 
+            return res.status(200).json(bike) 
         }
         catch (error) {
             return res.status(500).json({ message: `Something wrong. Detail... \n ${error}` })
@@ -78,25 +74,24 @@ const stationController = {
     },
     returnBike: async (req, res) => {
         try {
-            const station = await Station.findById(req.params.stationId)
-            if (!station) {
-                return res.status(400).json({message: "Not found this station"})
+            const bike = await Bike.findById(req.params.bikeId)
+            if (!bike || bike.isRent == false) {
+                return res.status(400).json({message: "This bike or this id invalid"})
             }
-            const response = await fetch(`http://localhost:${process.env.STATION_PORT}/getOpenSlot`)
-            const data = await response.json()
-            if (!data.status) {
-                return res.status(400).json({message: "This station is full or cannot serve"})
-            } 
-            return res.redirect(`/api/payments/update/${station._id}/${data.slot}`,302)
+
+            Object.assign(bike, {isRent: true, station: req.params.stationId})
+            await bike.save()
+            return res.status(200).json("return bike successfully")
+            // const payment = await Payment.findOne({bikeId: req.params.bikeId, isCompleted: false})
+            // if (!payment) {
+            //     return res.status(400).json({message: "Can't pay"})
+            // }
+            // return res.redirect(`/api/payments/update/${station._id}/${data.slot}`,302)
         }
         catch (error) {
             return res.status(500).json({ message: `Something wrong. Detail... \n ${error}` })
         }
     },
-
-
-
-
 
 
     createStation: async (req, res) => {

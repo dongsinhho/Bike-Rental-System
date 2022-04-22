@@ -2,6 +2,7 @@ const express = require('express')
 const userRoute = require('../route/user.route')
 const paymentRoute = require('../route/payment.route')
 const stationRoute = require('../route/station.route')
+const bikeRoute = require('../route/bike.route')
 const router = express.Router()
 
 const defaultRoute = [{
@@ -13,6 +14,9 @@ const defaultRoute = [{
 }, {
     path: '/stations',
     route: stationRoute
+}, {
+    path: '/bikes',
+    route: bikeRoute
 }]
 
 defaultRoute.forEach((route) => {
