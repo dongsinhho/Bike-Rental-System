@@ -27,6 +27,7 @@ const stationController = {
             }
             console.log(bike.station)
             const station = await Station.findById(bike.station)
+            console.log(station)
             if (!station) {
                 return res.status(400).json({ message: "This bike doesn't belong any station" })
             }

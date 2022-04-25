@@ -79,9 +79,9 @@ const stationController = {
                 return res.status(400).json({message: "This bike or this id invalid"})
             }
 
-            Object.assign(bike, {isRent: true, station: req.params.stationId})
+            Object.assign(bike, {isRent: false, station: req.params.stationId})
             await bike.save()
-            return res.status(200).json("return bike successfully")
+            return res.status(200).json({message: "return bike successfully"})
             // const payment = await Payment.findOne({bikeId: req.params.bikeId, isCompleted: false})
             // if (!payment) {
             //     return res.status(400).json({message: "Can't pay"})
