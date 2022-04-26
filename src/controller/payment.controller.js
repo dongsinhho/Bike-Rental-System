@@ -22,16 +22,22 @@ const paymentController = {
     },
     updatePayment: async (req, res) => {
         try {
-            const payment = await Payment.findOne({isCompleted: false, user: req.user.id})          
+            const payment = await Payment.findOne({ isCompleted: false, user: req.user.id }).populate({
+                path: 'takeAt',
+                select: 'name'
+            }).populate({
+                path: 'paidAt',
+                select: 'name'
+            })
 
             if (!payment) {
                 return res.status(400).json({
                     message: "Cannot found any payment"
                 })
             }
-            
+
             const bike = await Bike.findById(payment.bikeId)
-            if (!bike || bike.isRent==true) {
+            if (!bike || bike.isRent == true) {
                 return res.status(400).json({
                     message: "You need to return bike first"
                 })
@@ -39,6 +45,26 @@ const paymentController = {
 
             Object.assign(payment, {
                 paidAt: bike.station,
+            })
+
+            await payment.save()
+            return res.status(200).json(payment)
+        }
+        catch (error) {
+            return res.status(500).json({ message: `Something wrong. Detail... \n ${error}` })
+        }
+    },
+    cashPayment: async (req, res) => {
+        try {
+            const payment = await Payment.findOne({ isCompleted: false, user: req.user.id })
+
+            if (!payment) {
+                return res.status(400).json({
+                    message: "Cannot found any payment"
+                })
+            }
+
+            Object.assign(payment, {
                 isCompleted: true
             })
 
@@ -51,13 +77,19 @@ const paymentController = {
     },
     getUserPayment: async (req, res) => {
         try {
-            const payment = await Payment.find({user: req.user.id}).select("_id createdAt updatedAt")
+            const payment = await Payment.find({ user: req.user.id }).populate({
+                path: 'takeAt',
+                select: 'name'
+            }).populate({
+                path: 'paidAt',
+                select: 'name'
+            })
             if (!payment) {
                 return res.status(400).json({
                     message: "Cannot found any payment"
                 })
             }
-            return res.status(200).json(payment)  
+            return res.status(200).json(payment)
         }
         catch (error) {
             return res.status(500).json({ message: `Something wrong. Detail... \n ${error}` })
