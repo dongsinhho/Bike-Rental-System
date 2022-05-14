@@ -6,19 +6,19 @@ const {registerValidation, loginValidation, updateUserValidation} = require('../
 const userController = {
     createUser: async (req, res) => {
         try {
-            if (!validator.isEmail(req.body.email)) {
-                return res.status(400).json({ message: "Email invalid" })
-            }
             const {error} = await registerValidation.validate(req.body)
             if (error) {
                 console.log(error)
                 return res.status(400).json({ message: error.details[0].message })
             }
+            if (!validator.isEmail(req.body.email)) {
+                return res.status(400).json({ message: "Email invalid" })
+            }
             if (await User.isEmailTaken(req.body.email)) {
                 return res.status(400).json({ message: "Registered email" })
             }
             const user = await User.create(req.body)
-            return res.status(201).json(user);
+            return res.status(201).json({message: "created"});
         }
         catch (error) {
             return res.status(500).json({ message: `Something wrong. Detail ${error}` })
@@ -101,13 +101,13 @@ const userController = {
 
     login: async (req, res) => {
         try {
-            if (req.body.email && !validator.isEmail(req.body.email)) {
-                return res.status(400).json({ message: "Email invalid" })
-            }
             const {error} = await loginValidation.validate(req.body)
             if (error) {
                 console.log(error)
                 return res.status(400).json({ message: error.details[0].message })
+            }
+            if (req.body.email && !validator.isEmail(req.body.email)) {
+                return res.status(400).json({ message: "Email invalid" })
             }
             const {email, password} = req.body
             const user = await User.findOne({email});
