@@ -7,12 +7,7 @@ const Bike = require("../model/bike.model");
 const stationController = {
     getAllStation: async (req, res) => {
         try {
-            let station
-            if (req.user.role === "admin") {
-                station = await Station.find()
-            } else {
-                station = await Station.find()
-            }
+            const station = await Station.find()
             if (!station) {
                 return res.status(404).json({message: "Not found any station"})
             }
