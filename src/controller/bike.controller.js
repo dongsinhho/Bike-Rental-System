@@ -31,7 +31,13 @@ const stationController = {
             }
             //fetch api :stationId const slot = await post(station.ip)
             const response = await fetch(`http://${station.ip}:${process.env.STATION_PORT}/bike/${req.params.bikeId}`, {
-                method: 'GET'
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                redirect: 'follow',
+                credentials: 'include'
             })
             const data = await response.json()
 
