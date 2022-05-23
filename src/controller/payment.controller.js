@@ -5,6 +5,12 @@ const Bike = require('../model/bike.model')
 const paymentController = {
     createPayment: async (req, res) => {
         try {
+            const checkPayment = Payment.find({ user: req.user.id, isCompleted: false })
+            if (checkPayment) {
+                return res.status(404).json({
+                    message: "You need to complete previous payment first"
+                })
+            }
             const payment = new Payment({
                 user: req.user.id,
                 bikeId: req.params.bikeId,

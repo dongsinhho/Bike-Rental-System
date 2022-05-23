@@ -25,14 +25,12 @@ const stationController = {
             if (!bike.station) {
                 return res.status(400).json({ message: "This bike doesn't belong any station" })
             }
-            console.log(bike.station)
             const station = await Station.findById(bike.station)
-            console.log(station)
             if (!station) {
                 return res.status(400).json({ message: "This bike doesn't belong any station" })
             }
             //fetch api :stationId const slot = await post(station.ip)
-            const response = await fetch(`http://${station.ip}:${process.env.STATION_PORT}/${req.params.bikeId}`, {
+            const response = await fetch(`http://${station.ip}:${process.env.STATION_PORT}/bike/${req.params.bikeId}`, {
                 method: 'GET'
             })
             const data = await response.json()

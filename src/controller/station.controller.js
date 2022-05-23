@@ -43,7 +43,6 @@ const stationController = {
             //     select: '_id name'             
             // })
             const payment = await Payment.find({isCompleted: false, user: req.user.id})
-            console.log(payment)
             if (payment.length != 0) {
                 return res.status(400).json({message: "This user need to return bike"})
             }
@@ -52,8 +51,8 @@ const stationController = {
             if (!station) {
                 return res.status(400).json({message: "Not found this station"})
             }
-            //fetch api :stationId const slot = await post(station.ip)
-            const response = await fetch(`http://localhost:${process.env.STATION_PORT}/getCloseSlot`, {
+            //fetch api :stationId const slot = await postSTATION_(station.ip)
+            const response = await fetch(`http://localhost:${process.env.PORT}/getCloseSlot`, {
                 method: 'GET'
             })
             const data = await response.json()
