@@ -5,8 +5,8 @@ const Bike = require('../model/bike.model')
 const paymentController = {
     createPayment: async (req, res) => {
         try {
-            const checkPayment = Payment.find({ user: req.user.id, isCompleted: false })
-            if (checkPayment) {
+            const checkPayment = await Payment.find({ user: req.user.id, isCompleted: false })
+            if (checkPayment.length != 0) {
                 return res.status(404).json({
                     message: "You need to complete previous payment first"
                 })
@@ -17,7 +17,6 @@ const paymentController = {
                 takeAt: req.params.stationId
             })
             await payment.save()
-            console.log(req.user.id)
             return res.status(200).json({
                 message: "Create success"
             })
@@ -42,7 +41,11 @@ const paymentController = {
                 })
             }
 
-            const bike = await Bike.findById(payment.bikeId)
+            const bike = await Bike.findById(payment.bikeId).populate({
+                path: 'station',
+                select: 'name'
+            })
+
             if (!bike || bike.isRent == true) {
                 return res.status(400).json({
                     message: "You need to return bike first"
@@ -52,8 +55,8 @@ const paymentController = {
             Object.assign(payment, {
                 paidAt: bike.station,
             })
-
             await payment.save()
+            console.log(payment)
             return res.status(200).json(payment)
         }
         catch (error) {

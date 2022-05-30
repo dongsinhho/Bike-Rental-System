@@ -44,6 +44,11 @@ const stationController = {
             if (!data.status) {
                 return res.status(400).json({ message: "This station is empty or cannot serve" })
             }
+            Object.assign(bike, {
+                station: null,
+                isRent: true
+            })
+            await bike.save()
             return res.redirect(`/api/payments/create/${station._id}/${req.params.bikeId}`, 302)
         }
         catch (error) {
